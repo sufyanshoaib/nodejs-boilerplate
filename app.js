@@ -1,3 +1,5 @@
+require('dotenv').config();
+var models = require("./app/models");
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -11,7 +13,7 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -37,5 +39,15 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+//sync Database
+models.sequelize
+    .sync()
+    .then(() => {
+      console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+      console.error('Unable to connect to the database:', err);
+    });
 
 module.exports = app;
